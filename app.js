@@ -224,7 +224,38 @@ function loadEpisode(id){
 }
 
 /* FAVORITOS */
-function renderFavorites(){
+function renderFavorites(){async function renderFavorites(){
+
+    const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+
+    if(favorites.length === 0){
+        app.innerHTML = "<h2 style='padding:40px'>Sua lista está vazia</h2>";
+        return;
+    }
+
+    app.innerHTML = "";
+    
+    for(const item of favorites){
+
+        if(item.type === "movie"){
+
+            const data = await fetch(
+                `${BASE_URL}/movie/${item.id}?api_key=${API_KEY}`
+            ).then(r=>r.json());
+
+            createCatalog("🎬 Minha Lista", [data], "movie");
+
+        } else if(item.type === "series"){
+
+            const data = await fetch(
+                `${BASE_URL}/tv/${item.id}?api_key=${API_KEY}`
+            ).then(r=>r.json());
+
+            createCatalog("📺 Minha Lista", [data], "series");
+        }
+    }
+}
+
     const fav = JSON.parse(localStorage.getItem("fav")) || [];
     if(fav.length===0){
         app.innerHTML="<h2>Sem favoritos</h2>";
